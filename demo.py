@@ -1,18 +1,17 @@
-import numpy as np
+import argparse
+import ast
 import os
 from glob import glob
+
+import numpy as np
 import scipy.io as sio
 from skimage.io import imread, imsave
 from skimage.transform import rescale, resize
-from time import time
-import argparse
-import ast
 
 from api import PRN
-
 from utils.estimate_pose import estimate_pose
-from utils.rotate_vertices import frontalize
 from utils.render_app import get_visibility, get_uv_mask, get_depth_image
+from utils.rotate_vertices import frontalize
 from utils.write import write_obj_with_colors, write_obj_with_texture
 
 
@@ -100,7 +99,7 @@ def main(args):
                 print(save_vertices + colors)
                 print(prn.triangles)
                 write_obj_with_colors(os.path.join(save_folder, name + '.obj'), save_vertices, prn.triangles,
-                                  colors)  # save 3d face(can open with meshlab)
+                                      colors)  # save 3d face(can open with meshlab)
 
     if args.isDepth:
         depth_image = get_depth_image(vertices, prn.triangles, h, w, True)
@@ -135,12 +134,14 @@ def main(args):
 
 
 def driver():
+    data_path = os.path.abspath(os.path.join(
+        '..', os.getcwd())) + "/instance/uploads/"
     parser = argparse.ArgumentParser(
         description='Joint 3D Face Reconstruction and Dense Alignment with Position Map Regression Network')
 
-    parser.add_argument('-i', '--inputDir', default='input/', type=str,
+    parser.add_argument('-i', '--inputDir', default=data_path, type=str,
                         help='path to the input directory, where input images are stored.')
-    parser.add_argument('-o', '--outputDir', default='output/', type=str,
+    parser.add_argument('-o', '--outputDir', default=data_path, type=str,
                         help='path to the output directory, where results(obj,txt files) will be stored.')
     parser.add_argument('--gpu', default='-1', type=str,
                         help='set gpu id, -1 for CPU')
