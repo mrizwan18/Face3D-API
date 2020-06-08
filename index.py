@@ -3,6 +3,8 @@ import os
 from flask import Flask, render_template, request, send_file
 from werkzeug.utils import secure_filename
 
+from demo import driver
+
 app = Flask(__name__, static_url_path='/static')
 if not os.path.exists(os.path.join(app.instance_path, 'uploads')):
     os.makedirs(os.path.join(app.instance_path, 'uploads'))
@@ -10,25 +12,29 @@ if not os.path.exists(os.path.join(app.instance_path, 'uploads')):
 
 @app.route("/", methods=['POST'])
 def startProcess():
+    name = ""
     try:
         src = request.files['source']
         src.save(os.path.join(app.instance_path,
                               'uploads/', secure_filename(src.filename)))
+        name = os.path.splitext(secure_filename(src.filename))[0]
     except:
-        return "Source is empty"
+        return "Source is empty", 400
 
     try:
-        print("OK")
-        # driver()
+        status = driver(name)
+        if status == -1:
+            return "Some error occurred while setting args", 400
+        elif status == -2:
+            return "Some error occurred while calling main(parser)", 400
     except:
         return "Some error occurred while processing", 400
 
     try:
         os.remove(os.path.join(app.instance_path,
                                'uploads/', secure_filename(src.filename)))
-        name = os.path.splitext(secure_filename(src.filename))[0]
         return send_file(os.path.join(app.instance_path,
-                                      'uploads/', name, ".obj"),
+                                      'uploads/', name + ".obj"),
                          attachment_filename=name + ".obj")
     except:
         return "Some error occurred while returning image", 418
