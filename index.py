@@ -3,8 +3,6 @@ import os
 from flask import Flask, render_template, request, send_file
 from werkzeug.utils import secure_filename
 
-from demo import driver
-
 app = Flask(__name__, static_url_path='/static')
 if not os.path.exists(os.path.join(app.instance_path, 'uploads')):
     os.makedirs(os.path.join(app.instance_path, 'uploads'))
@@ -20,11 +18,12 @@ def startProcess():
         return "Source is empty"
 
     try:
-        driver()
-	except:
+        print("OK")
+        # driver()
+    except:
         return "Some error occurred while processing", 400
-	
-	try:
+
+    try:
         os.remove(os.path.join(app.instance_path,
                                'uploads/', secure_filename(src.filename)))
         name = os.path.splitext(secure_filename(src.filename))[0]
