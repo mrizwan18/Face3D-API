@@ -1,5 +1,6 @@
 import os
 
+from PIL import Image
 from flask import Flask, render_template, request, send_file
 from werkzeug.utils import secure_filename
 
@@ -15,8 +16,15 @@ def startProcess():
     name = ""
     try:
         src = request.files['source']
-        src.save(os.path.join(app.instance_path,
-                              'uploads/', secure_filename(src.filename)))
+
+        path = os.path.join(app.instance_path,
+                            'uploads/', secure_filename(src.filename))
+        src.save(path)
+
+        image = Image.open(path)
+        image.thumbnail((500, 500))
+        image.save(path)
+
         name = os.path.splitext(secure_filename(src.filename))[0]
     except:
         return "Source is empty", 400
