@@ -1,6 +1,6 @@
 scikit-image==0.14.3
 scipy==1.2.2
-numpy==1.16.4
+numpy==1.22.0
 tensorflow==1.14.0
 dlib==19.18.0
 Flask
